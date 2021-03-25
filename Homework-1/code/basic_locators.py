@@ -1,0 +1,15 @@
+from selenium.webdriver.common.by import By
+
+SIGN_IN = (By.CSS_SELECTOR, '[class*="responseHead-module-button"]')
+LOGIN = (By.CSS_SELECTOR, '[placeholder="Email или номер телефона"]')
+PASSWORD = (By.CSS_SELECTOR, '[placeholder="Пароль"]')
+ENTER = (By.CSS_SELECTOR, '[class*="authForm-module-button"]')
+USER_ACCOUNT = (By.CSS_SELECTOR, '[class*="right-module-rightButton"]')
+MENU_ACCOUNT = (By.CSS_SELECTOR, '[class*="rightMenu-module-visibleRightMenu"]')
+EXIT = (By.XPATH, "//li//a[@href='/logout']")
+FIO = (By.XPATH, '//div[@data-name="fio"]//div[@class="input__wrap"]//input')
+PHONE = (By.XPATH, '//div[@data-name="phone"]//div[@class="input__wrap"]//input')
+EMAIL = (By.XPATH, "//div[@class='js-additional-email profile__list__row__input']//div//div//input")
+SAVE = (By.CSS_SELECTOR, '[data-class-name="Submit"]')
+SEGMENTS = (By.XPATH, '//li//a[@href="/segments"]')
+STATISTICS = (By.XPATH, '//li//a[@href="/statistics"]')
