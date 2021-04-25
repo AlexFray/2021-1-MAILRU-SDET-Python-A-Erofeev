@@ -12,7 +12,7 @@ def file_path(repo_root):
 
 @pytest.fixture(scope='function')
 def create_image(api_client, file_path):
-    return api_client.post_image(image=file_path)
+    return api_client.upload_image(image=file_path)
 
 
 @pytest.fixture(scope='function')

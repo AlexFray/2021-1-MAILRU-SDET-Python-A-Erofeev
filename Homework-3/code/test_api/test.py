@@ -18,9 +18,9 @@ class TestApi(ApiBase):
     def test_create_segment(self, name_segment):
         response = self.api_client.post_segment(name_segment)
         segments = self.api_client.get_segments()
-        campaign = [camp for camp in segments['items'] if camp['name'] in name_segment]
-        assert len(campaign) == 1
-        assert campaign[0]['id'] == response['id']
+        segment = [segm for segm in segments['items'] if segm['name'] in name_segment]
+        assert len(segment) == 1
+        assert segment[0]['id'] == response['id']
 
     @pytest.mark.API
     def test_delete_segment(self, create_segment_id):
