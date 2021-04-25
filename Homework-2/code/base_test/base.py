@@ -18,7 +18,6 @@ class BaseCase:
         self.MainPage: MainPage = request.getfixturevalue('main_page')
 
     @pytest.fixture()
-    @allure.title('Авторизация в системе.')
     def dashboard(self):
         self.MainPage.authorization('ero-feev7@yandex.ru', 'CPaf9Cm9P484BPB')
         return DashboardPage(self.driver)
