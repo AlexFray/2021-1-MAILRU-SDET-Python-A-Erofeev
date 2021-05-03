@@ -22,7 +22,7 @@ cat access.log | wc -l
     
 Аналог для консоли: 
 ```shell script
-echo 'GET: '$(grep -e ' "GET ' -c access.log) 'POST: '$(grep -e ' "POST ' -c access.log) 'HEAD: '$(grep -e ' "HEAD ' -c access.log) 'PUT: '$(grep -e ' "PUT ' -c access.log)
+cat access.log | awk '{if(length($6) < 7) print $6}' | sort | uniq -c
 ```
 
 ### 3. Задание: топ 10 самых частых запросов.
@@ -46,7 +46,7 @@ cat access.log | awk '{print $7}' | sort | uniq -c | sort -nr | head
     
 Аналог для консоли:  
 ```shell script
-cat access.log | awk '{ if($9 >= 400 && $9 < 500) print $7,$9,$10,$1}' | uniq | sort -k3 -rn | head -n 5
+cat access.log | awk '{if($9 ~ /4[0-9][0-9]/) print $7,$9,$10,$1}' | uniq | sort -k3 -rn | head -n 5
 ```
 
 ### 5. Задание: Топ 5 пользователей по количеству запросов, которые завершились серверной (5ХХ) ошибкой
