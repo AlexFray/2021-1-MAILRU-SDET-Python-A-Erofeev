@@ -10,6 +10,10 @@ CLICK_RETRY = 3
 TIME_WAIT = 10
 
 
+class ItemNotFound(Exception):
+    pass
+
+
 class BasePage(object):
     locators = BasePageLocators()
 
@@ -25,6 +29,7 @@ class BasePage(object):
         try:
             def _find():
                 return self.driver.find_element(*locator)
+
             return wait(_find, error=exceptions.NoSuchElementException, check=True, timeout=timeout, interval=0.2)
         except TimeoutError:
             return None
@@ -44,6 +49,12 @@ class BasePage(object):
         input = self.find(locator)
         input.clear()
         input.send_keys(text)
+
+    def searchText(self, text):
+        self.click(self.locators.KEYBOARD)
+        self.inputText(text, self.locators.SEARCH_INPUT)
+        self.click(self.locators.INPUT_ACTION)
+        self.driver.hide_keyboard()
 
     def swipe_up(self, swipetime=200):
         """
@@ -102,5 +113,8 @@ class BasePage(object):
                 release(). \
                 perform()
         else:
-            print(f'Элемент не найден. Локатор: {locator}.')
-            # raise ItemNotFound(f'Элемент не найден. Локатор: {locator}.')
+            raise ItemNotFound(f'Элемент не найден. Локатор: {locator}.')
+
+    def back(self, count):
+        for i in list(range(count)):
+            self.driver.back()

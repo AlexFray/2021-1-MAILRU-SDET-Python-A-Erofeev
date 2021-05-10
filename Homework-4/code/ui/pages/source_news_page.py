@@ -10,4 +10,3 @@ class SourceNewsPage(BasePage):
         self.click(button)
         selected = (self.locators.SELECTED_SOURCE[0], self.locators.SELECTED_SOURCE[1].format(name_source))
         assert self.find(selected)
-        self.driver.back()

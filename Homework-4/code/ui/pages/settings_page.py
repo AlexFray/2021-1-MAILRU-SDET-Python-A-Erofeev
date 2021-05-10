@@ -11,7 +11,6 @@ class SettingsPage(BasePage):
         self.swipe_to_element(self.locators.SOURCE_NEWS, 10)
         self.click(self.locators.SOURCE_NEWS)
         SourceNewsPage(self.driver).change_source(name_source)
-        self.driver.back()
 
     def check_info(self, version):
         self.swipe_to_element(self.locators.ABOUT, 10)

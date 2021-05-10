@@ -6,16 +6,19 @@ from ui.pages.settings_page import SettingsPage
 class MainPage(BasePage):
     locators = MainPageLocators()
 
-    def search_text(self, text, cart_info, additional_info, result):
-        self.click(self.locators.KEYBOARD)
-        self.inputText(text, self.locators.SEARCH_INPUT)
-        self.click(self.locators.INPUT_ACTION)
-        self.driver.hide_keyboard()
+    def search_text(self, text, result):
+        self.searchText(text)
         info = self.find(self.locators.FACT_CARD_CONTEXT).text
-        assert cart_info in info
-        count = (self.locators.TEXT[0],
-                 self.locators.TEXT[1].format(additional_info))
-        self.click(count)
+        assert result in info
+
+    def search_additional_info(self, text, auxiliary, result):
+        elem = (self.locators.TEXT[0],
+                self.locators.TEXT[1].format(auxiliary))
+        self.swipe_element_lo_left(elem)
+        elem = (self.locators.TEXT[0],
+                self.locators.TEXT[1].format(text))
+        self.swipe_element_lo_left(elem)
+        self.click(elem)
         count = (self.locators.TEXT[0],
                  self.locators.TEXT[1].format(result))
         assert self.find(count)
@@ -23,17 +26,10 @@ class MainPage(BasePage):
     def edit_source(self, name_source):
         self.click(self.locators.SETTINGS)
         SettingsPage(self.driver).edit_source_news(name_source)
-        self.click(self.locators.KEYBOARD)
-        self.inputText('News', self.locators.SEARCH_INPUT)
-        self.click(self.locators.INPUT_ACTION)
-        self.driver.hide_keyboard()
-        return self.find(self.locators.TRACK_NAME).text
+        self.back(2)
 
     def calculation(self, expression, res):
-        self.click(self.locators.KEYBOARD)
-        self.inputText(expression, self.locators.SEARCH_INPUT)
-        self.click(self.locators.INPUT_ACTION)
-        self.driver.hide_keyboard()
+        self.searchText(expression)
         result = (self.locators.TEXT[0],
                   self.locators.TEXT[1].format(res))
         return self.find(result).text

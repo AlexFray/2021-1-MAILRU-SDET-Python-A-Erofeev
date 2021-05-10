@@ -1,18 +1,20 @@
 import shutil
 import sys
-from ui.fixturies import *
+from ui.fixtures import *
 
 
 def pytest_addoption(parser):
     parser.addoption('--appium', default='http://127.0.0.1:4723/wd/hub')
     parser.addoption('--debug_log', action='store_true')
+    parser.addoption('--apk', default='Marussia_v1.39.1.apk')
 
 
 @pytest.fixture(scope='session')
 def config(request):
     appium = request.config.getoption('--appium')
     debug_log = request.config.getoption('--debug_log')
-    return {'appium': appium, 'debug_log': debug_log}
+    app = request.config.getoption('--apk')
+    return {'appium': appium, 'debug_log': debug_log, 'app': app}
 
 
 def pytest_configure(config):
@@ -26,7 +28,6 @@ def pytest_configure(config):
             shutil.rmtree(base_test_dir)
         os.makedirs(base_test_dir)
 
-    # save to config for all workers
     config.base_test_dir = base_test_dir
 
 
