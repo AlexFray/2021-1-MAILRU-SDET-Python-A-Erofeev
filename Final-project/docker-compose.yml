@@ -1,0 +1,56 @@
+version: '2.1'
+
+networks:
+  default:
+    external: true
+    name: $DOCKER_NETWORK
+
+services:
+  percona:
+    image: percona:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    volumes:
+      - "./code/migration/mysql.sql:/data/application/mysql.sql"
+    command: --init-file /data/application/mysql.sql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', '-uroot', '-ppass', 'ping', '-h', '127.0.0.1']
+      timeout: 1s
+      retries: 30
+    networks:
+      - default
+
+  testapp:
+    image: myapp:latest
+    volumes:
+      - "./code/settings/appconf.py:/tmp/appconf"
+    healthcheck:
+      test: curl -sS http://127.0.0.1:8080/status || echo 1
+      timeout: 1s
+      retries: 30
+    depends_on:
+      percona:
+        condition: service_healthy
+    command: /app/myapp --config=/tmp/appconf
+    links:
+      - percona:percona
+    networks:
+      - default
+
+  mock:
+    networks:
+      - default
+    build:
+      context: ./mock/
+
+  tests_qa:
+    networks:
+      - default
+    build:
+      context: .
+    volumes:
+      - "$ALLURE_DIR:/tmp/allure-reports"
+    entrypoint: $PYTHON_CMD
+    depends_on:
+      testapp:
+        condition: service_healthy
