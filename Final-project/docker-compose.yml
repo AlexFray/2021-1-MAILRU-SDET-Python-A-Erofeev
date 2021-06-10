@@ -33,7 +33,7 @@ services:
         condition: service_healthy
     command: /app/myapp --config=/tmp/appconf
     links:
-      - mysql_db:mysql_db
+      - mysql_db : mysql_db
     networks:
       - tests_network
 
