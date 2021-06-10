@@ -8,6 +8,7 @@ networks:
 services:
   percona:
     image: percona:latest
+    container_name: "percona_$BUILD_NUMBER"
     environment:
       MYSQL_ROOT_PASSWORD: pass
     volumes:
@@ -22,6 +23,7 @@ services:
 
   testapp:
     image: myapp:latest
+    container_name: "testapp_$BUILD_NUMBER"
     volumes:
       - "./code/settings/appconf.py:/tmp/appconf"
     healthcheck:
@@ -38,12 +40,14 @@ services:
       - tests_network
 
   mock:
+    container_name: "mock_$BUILD_NUMBER"
     networks:
       - tests_network
     build:
       context: ./mock/
 
   tests_qa:
+    container_name: "testsqa_$BUILD_NUMBER"
     networks:
       - tests_network
     build:
@@ -57,6 +61,7 @@ services:
 
   selenoid:
     image: aerokube/selenoid:latest-release
+    container_name: "selenoid_$BUILD_NUMBER"
     volumes:
       - "./selenoid:/etc/selenoid"
       - "/var/run/docker.sock:/var/run/docker.sock"
