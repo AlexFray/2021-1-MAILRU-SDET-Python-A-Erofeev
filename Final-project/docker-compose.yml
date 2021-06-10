@@ -1,7 +1,7 @@
 version: '2.1'
 
 networks:
-  default:
+  tests_network:
     external: true
     name: $DOCKER_NETWORK
 
@@ -18,7 +18,7 @@ services:
       timeout: 1s
       retries: 30
     networks:
-      - default
+      - tests_network
 
   testapp:
     image: myapp:latest
@@ -35,17 +35,17 @@ services:
     links:
       - percona:percona
     networks:
-      - default
+      - tests_network
 
   mock:
     networks:
-      - default
+      - tests_network
     build:
       context: ./mock/
 
   tests_qa:
     networks:
-      - default
+      - tests_network
     build:
       context: .
     volumes:

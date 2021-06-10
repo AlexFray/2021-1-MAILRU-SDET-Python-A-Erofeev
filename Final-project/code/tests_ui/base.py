@@ -1,3 +1,4 @@
+import allure
 import pytest
 import requests
 from _pytest.fixtures import FixtureRequest
@@ -17,6 +18,7 @@ class BaseCase:
     authorize = True
 
     @pytest.fixture(scope='function', autouse=True)
+    @allure.title('Инициализация базовых классов.')
     def setup(self, driver, config, request: FixtureRequest, logger, ui_report, mysql_client):
         self.driver = driver
         self.config = config
