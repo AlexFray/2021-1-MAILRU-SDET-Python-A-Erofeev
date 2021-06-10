@@ -1,4 +1,6 @@
 import logging
+
+import allure
 import requests
 
 from urllib.parse import urljoin
@@ -23,6 +25,7 @@ class Client:
             'Vary': 'Cookie'
         }
 
+    @allure.step('Авторизация пользователем {login}:{password}')
     def login(self, login, password):
         data = {
             'username': login,
@@ -39,11 +42,13 @@ class Client:
         session_token = [s for s in response_cookies if 'session' in s][0].split('=')[-1]
         self.session.cookies = cookiejar_from_dict({'session': session_token})
 
+    @allure.title('Выход из сессии.')
     def logout(self):
         r = self._request('GET', '/logout')
         if r.status_code != 302:
             raise ErrorRequest(f'Ошибка выхода из системы. {r.status_code} != 302')
 
+    @allure.step("Создание пользователя: {username}, {password}, {email}")
     def create_user(self, username, password, email):
         data = {
             'username': username,
@@ -54,21 +59,25 @@ class Client:
         logger.info(f"response: code={r.status_code}, data={r.text}")
         return r.status_code, r.text
 
+    @allure.step("Создание пользователя: {username}")
     def delete_user(self, username):
         r = self._request('GET', f'/api/del_user/{username}')
         logger.info(f"response: code={r.status_code}, data={r.text}")
         return r.status_code, r.text
 
+    @allure.step("Блокировка пользователя: {username}")
     def block_user(self, username):
         r = self._request('GET', f'/api/block_user/{username}')
         logger.info(f"response: code={r.status_code}, data={r.text}")
         return r.status_code, r.text
 
+    @allure.step("Активация пользователя: {username}")
     def accept_user(self, username):
         r = self._request('GET', f'/api/accept_user/{username}')
         logger.info(f"response: code={r.status_code}, data={r.text}")
         return r.status_code, r.text
 
+    @allure.step("Запрос статуса.")
     def status(self):
         r = self._request('GET', '/status')
         logger.info(f"response: code={r.status_code}, data={r.json()}")

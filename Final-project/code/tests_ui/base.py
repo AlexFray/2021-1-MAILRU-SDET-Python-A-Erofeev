@@ -5,6 +5,7 @@ from _pytest.fixtures import FixtureRequest
 
 from mysql.builder import MySQLBuilder
 from mysql.models import Users
+from settings import appconf
 from ui.pages.login_page import LoginPage
 from ui.pages.main_page import MainPage
 from ui.pages.reg_page import RegPage
@@ -44,9 +45,10 @@ class BaseCase:
         return self.login_page.authorization(*credentials)
 
     @pytest.fixture(scope='function')
-    def user_vk(self, vk_url=None):
+    def user_vk(self):
         user = self.mysql_builder.create_user()
-        r = requests.post('mock:8060/user', json={'username': user.username})
+        vl_url = appconf.VK_URL
+        r = requests.post(f'http://{vl_url}/user', json={'username': user.username})
         if r.status_code != 201:
             raise MockError(f'Мок сервис не доступен или произошла ошибка! Ответ: {r.json()}')
         vk_id = r.json()['vk_id']

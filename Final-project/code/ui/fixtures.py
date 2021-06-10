@@ -66,8 +66,8 @@ def get_driver(config):
             caps = {
                 'browserName': browser_name,
                 'version': '89.0',
-                'sessionTimeout': '2m',
-                'additionalNetworks': [config.get('network')]
+                'sessionTimeout': '2m'
+                # 'additionalNetworks': [config.get('network')]
             }
             if vnc:
                 caps['version'] += '_vnc'
@@ -84,8 +84,7 @@ def get_driver(config):
             caps = {
                 'browserName': browser_name,
                 'version': '86.0',
-                'sessionTimeout': '2m',
-                'additionalNetworks': [config.get('network')]
+                'sessionTimeout': '2m'
             }
             if vnc:
                 caps['version'] += '_vnc'

@@ -11,7 +11,7 @@ from api.client import Client
 def pytest_addoption(parser):
     parser.addoption('--url', default='http://testapp:8080')
     parser.addoption('--selenoid', action='store_true')
-    parser.addoption('--network_docker', default='final_default')
+    parser.addoption('--network_docker', default='tests')
     parser.addoption('--selenoid_ip', default='http://selenoid:4444')
     parser.addoption('--vnc', action='store_true')
     parser.addoption('--browser', default='chrome')

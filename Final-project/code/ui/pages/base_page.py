@@ -30,17 +30,19 @@ class BasePage:
         logger.info(f'Страница по ссылке {self.__class__.__name__} открыта...')
         assert self.is_opened()
 
+    @allure.step('Проверка открытия страницы.')
     def is_opened(self):
         def _check_url():
             current: str = self.driver.current_url
             if self.url not in current:
                 raise PageNotLoadedException(
-                    f'{self.url} did not opened in {TIME_WAIT} for {self.__class__.__name__}.\n'
-                    f'Current url: {self.driver.current_url}.')
+                    f'{self.url} страница не открыта за {TIME_WAIT}с. в {self.__class__.__name__}.\n'
+                    f'Текущий url: {self.driver.current_url}.')
             return True
 
         return wait(_check_url, error=PageNotLoadedException, check=True, timeout=TIME_WAIT, interval=0.3)
 
+    @allure.step('Поиск элемента на странице. Локатором {locator}.')
     def find(self, locator, timeout=TIME_WAIT):
         try:
             def _find():
@@ -50,17 +52,18 @@ class BasePage:
         except TimeoutError:
             return None
 
+    @allure.step("Поиск списка элементов. Локатор {locator}.")
     def finds(self, locator):
         return self.driver.find_elements(*locator)
 
+    @allure.step("Ожидание появления текста: {text}. Локатор {locator}.")
     def wait_text(self, text, locator, timeout=2):
         try:
             def _wait_text():
-                txt: str = self.find(locator).text
-                if txt != text:
+                txt = self.find(locator)
+                if txt is None or txt.text != text:
                     raise TextNotFound(f'Текст: "{text}" не найден. Текущий текст: {txt}.')
                 return txt
-
             return wait(_wait_text, error=TextNotFound, check=True, timeout=timeout, interval=0.2)
         except TimeoutError:
             return None
