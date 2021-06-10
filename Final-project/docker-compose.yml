@@ -33,7 +33,7 @@ services:
         condition: service_healthy
     command: /app/myapp --config=/tmp/appconf
     links:
-      - mysql_db : mysql_db
+      - percona_$BUILD_NUMBER:percona_$BUILD_NUMBER
     networks:
       - tests_network
 
