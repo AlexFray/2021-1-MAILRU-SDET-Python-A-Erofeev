@@ -6,9 +6,8 @@ networks:
     name: $DOCKER_NETWORK
 
 services:
-  percona:
+  mysql_db:
     image: percona:latest
-    container_name: "percona_$BUILD_NUMBER"
     environment:
       MYSQL_ROOT_PASSWORD: pass
     volumes:
@@ -23,7 +22,6 @@ services:
 
   testapp:
     image: myapp:latest
-    container_name: "testapp_$BUILD_NUMBER"
     volumes:
       - "./code/settings/appconf.py:/tmp/appconf"
     healthcheck:
@@ -31,23 +29,21 @@ services:
       timeout: 1s
       retries: 30
     depends_on:
-      percona:
+      mysql_db:
         condition: service_healthy
     command: /app/myapp --config=/tmp/appconf
     links:
-      - percona:percona
+      - mysql_db:mysql_db
     networks:
       - tests_network
 
-  mock:
-    container_name: "mock_$BUILD_NUMBER"
+  mock_flask:
     networks:
       - tests_network
     build:
       context: ./mock/
 
   tests_qa:
-    container_name: "testsqa_$BUILD_NUMBER"
     networks:
       - tests_network
     build:
@@ -59,9 +55,8 @@ services:
       testapp:
         condition: service_healthy
 
-  selenoid:
+  selenoid_hub:
     image: aerokube/selenoid:latest-release
-    container_name: "selenoid_$BUILD_NUMBER"
     volumes:
       - "./selenoid:/etc/selenoid"
       - "/var/run/docker.sock:/var/run/docker.sock"
