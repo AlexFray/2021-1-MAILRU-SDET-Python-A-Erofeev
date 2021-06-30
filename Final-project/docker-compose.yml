@@ -1,0 +1,69 @@
+version: '2.1'
+
+networks:
+  tests_network:
+    external: true
+    name: $DOCKER_NETWORK
+
+services:
+  mysql_db:
+    image: percona:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    volumes:
+      - "./code/migration/mysql.sql:/data/application/mysql.sql"
+    command: --init-file /data/application/mysql.sql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', '-uroot', '-ppass', 'ping', '-h', '127.0.0.1']
+      timeout: 1s
+      retries: 30
+    networks:
+      - tests_network
+
+  testapp:
+    image: myapp:latest
+    volumes:
+      - "./code/settings/appconf.py:/tmp/appconf"
+    healthcheck:
+      test: curl -sS http://127.0.0.1:8080/status || echo 1
+      timeout: 1s
+      retries: 30
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    command: /app/myapp --config=/tmp/appconf
+    links:
+      - percona_$BUILD_NUMBER:percona_$BUILD_NUMBER
+    networks:
+      - tests_network
+
+  mock_flask:
+    networks:
+      - tests_network
+    build:
+      context: ./mock/
+
+  tests_qa:
+    networks:
+      - tests_network
+    build:
+      context: .
+    volumes:
+      - "$ALLURE_DIR:/tmp/allure-reports"
+    entrypoint: $PYTHON_CMD
+    depends_on:
+      testapp:
+        condition: service_healthy
+
+  selenoid_hub:
+    image: aerokube/selenoid:latest-release
+    volumes:
+      - "./selenoid:/etc/selenoid"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./selenoid/video:/opt/selenoid/video"
+      - "./selenoid/logs:/opt/selenoid/logs"
+    environment:
+      - OVERRIDE_VIDEO_OUTPUT_DIR=./selenoid/video
+    command: ["-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video", "-log-output-dir", "/opt/selenoid/logs", "-container-network", "$DOCKER_NETWORK"]
+    networks:
+       tests_network: null

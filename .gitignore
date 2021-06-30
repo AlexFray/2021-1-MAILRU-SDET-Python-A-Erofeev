@@ -2,3 +2,4 @@ Pipfile
 .idea
 .pytest_cache
 projects
+/Final-project/Pipfile.lock
